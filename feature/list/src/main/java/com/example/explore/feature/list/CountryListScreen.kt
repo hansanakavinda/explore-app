@@ -1,4 +1,4 @@
-package com.example.explore
+package com.example.explore.feature.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -31,9 +31,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.explore.CountryListItem
+import com.example.explore.ListHeader
+import com.example.explore.SearchBar
+import com.example.explore.core.ui.R
 import com.example.explore.ui.theme.ExploreTheme
 
-// TEMPORARY: replace with Hansana's UiState once he pushes it
 data class CountryItemUi(
     val code: String,
     val name: String,

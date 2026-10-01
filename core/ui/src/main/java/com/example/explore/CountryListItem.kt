@@ -50,7 +50,6 @@ fun CountryListItem(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Flag placeholder (real image with Coil on Day 4)
             Box(
                 modifier = Modifier
                     .size(width = 72.dp, height = 48.dp)
