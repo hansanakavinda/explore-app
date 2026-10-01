@@ -4,13 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.padding
 import com.example.explore.ui.theme.ExploreTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,30 +18,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ExploreTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+            ExploreTheme(darkTheme = false, dynamicColor = false) {
+                Scaffold { innerPadding ->
+                    var query by remember { mutableStateOf("") }
+                    val filtered = fakeCountries.filter {
+                        it.name.contains(query, ignoreCase = true)
+                    }
+                    CountryListScreen(
+                        state = if (filtered.isEmpty()) TempListState.Empty
+                        else TempListState.Success(filtered),
+                        query = query,
+                        onQueryChange = { query = it },
+                        onCountryClick = { /* navigation comes from Hansana */ },
+                        onRetry = {},
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ExploreTheme {
-        Greeting("Android")
     }
 }
