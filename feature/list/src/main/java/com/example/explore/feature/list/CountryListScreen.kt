@@ -221,13 +221,11 @@ fun ErrorView(message: String, onRetry: () -> Unit, modifier: Modifier = Modifie
     }
 }
 
-// Previews commented out as mocking LazyPagingItems requires specific test setup
-/*
 @Preview(name = "Success", showBackground = true, heightDp = 800)
 @Composable
 fun ListSuccessPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Success(emptyList()), "", {}, {}, {})
+        CountryListScreen(TempListState.Success(fakeCountries), "", {}, {}, {})
     }
 }
 
@@ -254,4 +252,3 @@ fun ListErrorPreview() {
         CountryListScreen(TempListState.Error("Check your connection."), "", {}, {}, {})
     }
 }
-*/
