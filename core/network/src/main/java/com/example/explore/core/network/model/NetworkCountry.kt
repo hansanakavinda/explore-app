@@ -1,34 +1,64 @@
 package com.example.explore.core.network.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class NetworkResponse(
+    val data: NetworkData? = null
+)
+
+@Serializable
+data class NetworkData(
+    val objects: List<NetworkCountry>? = null
+)
+
+@Serializable
 data class NetworkCountry(
-    val cca3: String,
-    val name: NetworkName,
-    val capital: List<String>? = null,
-    val region: String,
+    val names: NetworkName? = null,
+    val codes: NetworkCodes? = null,
+    val capitals: List<NetworkCapital>? = null,
+    val region: String? = null,
     val subregion: String? = null,
-    val population: Long,
-    val area: Double,
-    val flags: NetworkFlags,
-    val currencies: Map<String, NetworkCurrency>? = null,
-    val languages: Map<String, String>? = null,
-    val timezones: List<String>
+    val population: Long? = null,
+    val area: NetworkArea? = null,
+    val flag: NetworkFlag? = null,
+    val currencies: List<NetworkCurrency>? = null,
+    val languages: List<NetworkLanguage>? = null,
+    val timezones: List<String>? = null
 )
 
 @Serializable
 data class NetworkName(
-    val common: String
+    val common: String? = null
 )
 
 @Serializable
-data class NetworkFlags(
-    val png: String
+data class NetworkCodes(
+    val alpha_3: String? = null
+)
+
+@Serializable
+data class NetworkCapital(
+    val name: String? = null
+)
+
+@Serializable
+data class NetworkFlag(
+    val url_png: String? = null
+)
+
+@Serializable
+data class NetworkArea(
+    val kilometers: Double? = null
 )
 
 @Serializable
 data class NetworkCurrency(
-    val name: String,
-    val symbol: String? = null
+    val name: String? = null
+)
+
+@Serializable
+data class NetworkLanguage(
+    val name: String? = null
 )

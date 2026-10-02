@@ -1,6 +1,7 @@
 package com.example.explore.sync
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -25,10 +26,13 @@ class SyncWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        Log.d("SyncWorker", "Starting network sync")
         val result = countryRepository.syncWithNetwork()
         if (result.isSuccess) {
+            Log.d("SyncWorker", "Network sync successful")
             Result.success()
         } else {
+            Log.e("SyncWorker", "Network sync failed", result.exceptionOrNull())
             Result.retry()
         }
     }

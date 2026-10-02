@@ -38,14 +38,16 @@ class OfflineFirstCountryRepository @Inject constructor(
 
     override suspend fun syncWithNetwork(): Result<Unit> {
         return try {
-            val networkCountries = networkApi.getAllCountries()
-            val entities = networkCountries.map { it.asEntity() }
-            
-            countryDao.clearAll()
-            countryDao.insertAll(entities)
-            
+            val response = networkApi.getAllCountries()
+            val networkCountries = response.data?.objects ?: emptyList()
+            if (networkCountries.isNotEmpty()) {
+                val entities = networkCountries.map { it.asEntity() }
+                countryDao.clearAll()
+                countryDao.insertAll(entities)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
     }

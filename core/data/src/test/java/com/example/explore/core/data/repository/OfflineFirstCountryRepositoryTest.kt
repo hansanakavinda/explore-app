@@ -2,9 +2,13 @@ package com.example.explore.core.data.repository
 
 import com.example.explore.core.database.dao.CountryDao
 import com.example.explore.core.database.model.CountryEntity
+import com.example.explore.core.network.model.NetworkArea
+import com.example.explore.core.network.model.NetworkCodes
 import com.example.explore.core.network.model.NetworkCountry
-import com.example.explore.core.network.model.NetworkFlags
+import com.example.explore.core.network.model.NetworkData
+import com.example.explore.core.network.model.NetworkFlag
 import com.example.explore.core.network.model.NetworkName
+import com.example.explore.core.network.model.NetworkResponse
 import com.example.explore.core.network.retrofit.CountryNetworkApi
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,15 +31,19 @@ class OfflineFirstCountryRepositoryTest {
 
     @Test
     fun `syncWithNetwork success clears and inserts`() = runTest {
-        val networkData = listOf(
-            NetworkCountry(
-                cca3 = "LKA",
-                name = NetworkName("Sri Lanka"),
-                region = "Asia",
-                population = 22000000,
-                area = 65610.0,
-                flags = NetworkFlags("url"),
-                timezones = listOf("UTC+05:30")
+        val networkData = NetworkResponse(
+            data = NetworkData(
+                objects = listOf(
+                    NetworkCountry(
+                        codes = NetworkCodes("LKA"),
+                        names = NetworkName("Sri Lanka"),
+                        region = "Asia",
+                        population = 22000000,
+                        area = NetworkArea(65610.0),
+                        flag = NetworkFlag("url"),
+                        timezones = listOf("UTC+05:30")
+                    )
+                )
             )
         )
         coEvery { mockApi.getAllCountries() } returns networkData

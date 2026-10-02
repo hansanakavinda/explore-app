@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -27,7 +28,15 @@ object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(): Call.Factory {
+        val authInterceptor = Interceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "rc_live_demo") // TODO: Replace with real key via BuildConfig
+                .build()
+            chain.proceed(request)
+        }
+
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -43,7 +52,7 @@ object NetworkModule {
         okhttpCallFactory: Call.Factory,
     ): CountryNetworkApi {
         return Retrofit.Builder()
-            .baseUrl("https://restcountries.com/")
+            .baseUrl("https://api.restcountries.com/")
             .callFactory(okhttpCallFactory)
             .addConverterFactory(
                 networkJson.asConverterFactory("application/json".toMediaType()),

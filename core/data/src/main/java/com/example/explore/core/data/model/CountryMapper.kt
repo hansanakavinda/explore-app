@@ -5,17 +5,17 @@ import com.example.explore.core.model.Country
 import com.example.explore.core.network.model.NetworkCountry
 
 fun NetworkCountry.asEntity() = CountryEntity(
-    code = cca3,
-    name = name.common,
-    capital = capital?.firstOrNull() ?: "N/A",
-    region = region,
+    code = codes?.alpha_3 ?: "Unknown",
+    name = names?.common ?: "Unknown",
+    capital = capitals?.firstOrNull()?.name ?: "N/A",
+    region = region ?: "N/A",
     subregion = subregion ?: "N/A",
-    population = population,
-    area = area,
-    flagUrl = flags.png,
-    currencies = currencies?.values?.map { it.name }?.joinToString(", ") ?: "N/A",
-    languages = languages?.values?.joinToString(", ") ?: "N/A",
-    timezones = timezones.joinToString(", ")
+    population = population ?: 0L,
+    area = area?.kilometers ?: 0.0,
+    flagUrl = flag?.url_png ?: "",
+    currencies = currencies?.mapNotNull { it.name }?.joinToString(", ") ?: "N/A",
+    languages = languages?.mapNotNull { it.name }?.joinToString(", ") ?: "N/A",
+    timezones = timezones?.joinToString(", ") ?: "N/A"
 )
 
 fun CountryEntity.asExternalModel() = Country(
