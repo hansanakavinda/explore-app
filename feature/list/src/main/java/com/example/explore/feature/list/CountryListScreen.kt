@@ -99,32 +99,29 @@ fun CountryListScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Spacer(Modifier.height(16.dp))
+    Column(modifier = modifier.fillMaxSize()) {
         ListHeader()
-        Spacer(Modifier.height(16.dp))
-        SearchBar(query = query, onQueryChange = onQueryChange)
-        Spacer(Modifier.height(16.dp))
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Spacer(Modifier.height(16.dp))
+            SearchBar(query = query, onQueryChange = onQueryChange)
+            Spacer(Modifier.height(16.dp))
 
-        when (state) {
-            is TempListState.Loading -> LoadingList()
-            is TempListState.Empty -> EmptyView()
-            is TempListState.Error -> ErrorView(state.message, onRetry)
-            is TempListState.Success -> LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(state.countries, key = { it.code }) { country ->
-                    CountryListItem(
-                        name = country.name,
-                        capital = country.capital,
-                        region = country.region,
-                        flagUrl = country.flagUrl,
-                        onClick = { onCountryClick(country.code) }
-                    )
+            when (state) {
+                is TempListState.Loading -> LoadingList()
+                is TempListState.Empty -> EmptyView()
+                is TempListState.Error -> ErrorView(state.message, onRetry)
+                is TempListState.Success -> LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(state.countries, key = { it.code }) { country ->
+                        CountryListItem(
+                            name = country.name,
+                            capital = country.capital,
+                            region = country.region,
+                            flagUrl = country.flagUrl,
+                            onClick = { onCountryClick(country.code) }
+                        )
+                    }
                 }
             }
         }

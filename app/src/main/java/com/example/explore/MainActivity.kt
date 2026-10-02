@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ExploreTheme(darkTheme = false, dynamicColor = false) {
+            ExploreTheme{
                 Scaffold { innerPadding ->
                     val navController = rememberNavController()
                     ExploreNavHost(
