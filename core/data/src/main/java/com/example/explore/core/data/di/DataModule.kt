@@ -1,7 +1,7 @@
 package com.example.explore.core.data.di
 
 import com.example.explore.core.data.repository.CountryRepository
-import com.example.explore.core.data.repository.fake.FakeCountryRepository
+import com.example.explore.core.data.repository.OfflineFirstCountryRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,6 +13,6 @@ interface DataModule {
 
     @Binds
     fun bindsCountryRepository(
-        fakeCountryRepository: FakeCountryRepository
+        offlineFirstCountryRepository: OfflineFirstCountryRepository
     ): CountryRepository
 }

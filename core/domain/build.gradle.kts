@@ -25,4 +25,5 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation("androidx.paging:paging-common:3.3.2")
 }

@@ -61,6 +61,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     testImplementation(libs.junit)

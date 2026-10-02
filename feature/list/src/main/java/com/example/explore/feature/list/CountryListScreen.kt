@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.example.explore.CountryListItem
 import com.example.explore.ListHeader
 import com.example.explore.SearchBar
@@ -40,6 +42,8 @@ import com.example.explore.ui.theme.ExploreTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import androidx.compose.runtime.getValue
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 
 data class CountryItemUi(
     val code: String,
@@ -77,22 +81,22 @@ fun CountryListRoute(
     modifier: Modifier = Modifier,
     viewModel: CountryListViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val pagedCountries = viewModel.pagedCountries.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsStateWithLifecycle()
 
     CountryListScreen(
-        state = state,
+        countries = pagedCountries,
         query = query,
         onQueryChange = viewModel::onQueryChange,
         onCountryClick = onCountryClick,
-        onRetry = { /* Retry logic here */ },
+        onRetry = { pagedCountries.retry() },
         modifier = modifier
     )
 }
 
 @Composable
 fun CountryListScreen(
-    state: TempListState,
+    countries: LazyPagingItems<CountryItemUi>,
     query: String,
     onQueryChange: (String) -> Unit,
     onCountryClick: (String) -> Unit,
@@ -110,21 +114,32 @@ fun CountryListScreen(
         SearchBar(query = query, onQueryChange = onQueryChange)
         Spacer(Modifier.height(16.dp))
 
-        when (state) {
-            is TempListState.Loading -> LoadingList()
-            is TempListState.Empty -> EmptyView()
-            is TempListState.Error -> ErrorView(state.message, onRetry)
-            is TempListState.Success -> LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(state.countries, key = { it.code }) { country ->
-                    CountryListItem(
-                        name = country.name,
-                        capital = country.capital,
-                        region = country.region,
-                        flagUrl = country.flagUrl,
-                        onClick = { onCountryClick(country.code) }
-                    )
+        when (val state = countries.loadState.refresh) {
+            is LoadState.Loading -> LoadingList()
+            is LoadState.Error -> ErrorView(state.error.message ?: "Unknown error", onRetry)
+            is LoadState.NotLoading -> {
+                if (countries.itemCount == 0) {
+                    EmptyView()
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(
+                            count = countries.itemCount,
+                            key = countries.itemKey { it.code }
+                        ) { index ->
+                            val country = countries[index]
+                            if (country != null) {
+                                CountryListItem(
+                                    name = country.name,
+                                    capital = country.capital,
+                                    region = country.region,
+                                    flagUrl = country.flagUrl,
+                                    onClick = { onCountryClick(country.code) }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -206,6 +221,8 @@ fun ErrorView(message: String, onRetry: () -> Unit, modifier: Modifier = Modifie
     }
 }
 
+// Previews commented out as mocking LazyPagingItems requires specific test setup
+/*
 @Preview(name = "Success", showBackground = true, heightDp = 800)
 @Composable
 fun ListSuccessPreview() {
@@ -237,3 +254,4 @@ fun ListErrorPreview() {
         CountryListScreen(TempListState.Error("Check your connection."), "", {}, {}, {})
     }
 }
+*/

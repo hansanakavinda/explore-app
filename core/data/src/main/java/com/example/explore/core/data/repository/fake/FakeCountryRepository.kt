@@ -1,9 +1,11 @@
 package com.example.explore.core.data.repository.fake
 
+import androidx.paging.PagingData
 import com.example.explore.core.data.repository.CountryRepository
 import com.example.explore.core.model.Country
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class FakeCountryRepository @Inject constructor() : CountryRepository {
@@ -21,12 +23,15 @@ class FakeCountryRepository @Inject constructor() : CountryRepository {
         Country("IND", "India", "New Delhi", "Asia", "Southern Asia", "1.38 billion", "3,287,263 km²", "", listOf("INR"), listOf("Hindi", "English"), listOf("UTC+5:30"))
     )
 
-    override fun getCountries(): Flow<List<Country>> = flow {
-        emit(fakeCountries)
+    override fun getCountries(query: String): Flow<PagingData<Country>> {
+        val filtered = if (query.isBlank()) fakeCountries else fakeCountries.filter { it.name.contains(query, ignoreCase = true) }
+        return flowOf(PagingData.from(filtered))
     }
 
     override fun getCountry(code: String): Flow<Country> = flow {
         val country = fakeCountries.find { it.code == code } ?: fakeCountries.first()
         emit(country)
     }
+
+    override suspend fun syncWithNetwork(): Result<Unit> = Result.success(Unit)
 }
