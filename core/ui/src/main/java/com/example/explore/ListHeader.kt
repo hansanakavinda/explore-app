@@ -1,41 +1,44 @@
 package com.example.explore
 
+import com.example.explore.core.ui.R
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.explore.core.ui.R
-import com.example.explore.ui.theme.ExploreTheme
+import com.example.explore.ui.components.ExploreHeader
+import com.example.explore.ui.components.ExploreSearchField
+import com.example.explore.ui.theme.BrandBlue
+
 
 @Composable
 fun ListHeader(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text("Explore", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-            Text(
-                "Discover countries, cultures and new destinations",
-                style = MaterialTheme.typography.bodyMedium
+    ExploreHeader(
+        title = "Explore",
+        subtitle = "Discover countries, cultures and new destinations",
+        modifier = modifier,
+        illustration = {
+            Image(
+                painter = painterResource(R.drawable.ic_globe_header),
+                contentDescription = null,
+                modifier = Modifier.size(96.dp)
             )
         }
-        Image(
-            painter = painterResource(R.drawable.ic_globe_header),
-            contentDescription = null,
-            modifier = Modifier.size(96.dp)
-        )
-    }
+    )
 }
 
 @Composable
@@ -44,31 +47,37 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier.fillMaxWidth(),
-        placeholder = { Text("Search countries") },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-        singleLine = true,
-        shape = RoundedCornerShape(24.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF0F4FA),
-            unfocusedContainerColor = Color(0xFFF0F4FA),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        )
-    )
+    ExploreSearchField(query, onQueryChange, modifier)
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ListHeaderPreview() {
-    ExploreTheme {
-        Column(Modifier.padding(16.dp)) {
-            ListHeader()
-            Spacer(Modifier.height(16.dp))
-            SearchBar(query = "", onQueryChange = {})
+fun DetailHeader(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = BrandBlue,
+        contentColor = Color.White,
+        shape = RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp),
+        shadowElevation = 6.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Explore",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics { heading() }
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_globe_header),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
         }
     }
 }
