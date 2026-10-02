@@ -31,11 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.explore.CountryListItem
 import com.example.explore.ListHeader
 import com.example.explore.SearchBar
 import com.example.explore.core.ui.R
 import com.example.explore.ui.theme.ExploreTheme
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+import androidx.compose.runtime.getValue
 
 data class CountryItemUi(
     val code: String,
@@ -64,6 +68,27 @@ val fakeCountries = listOf(
     CountryItemUi("ITA", "Italy", "Rome", "Europe"),
     CountryItemUi("IND", "India", "New Delhi", "Asia")
 )
+
+
+
+@Composable
+fun CountryListRoute(
+    onCountryClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CountryListViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+
+    CountryListScreen(
+        state = state,
+        query = query,
+        onQueryChange = viewModel::onQueryChange,
+        onCountryClick = onCountryClick,
+        onRetry = { /* Retry logic here */ },
+        modifier = modifier
+    )
+}
 
 @Composable
 fun CountryListScreen(
