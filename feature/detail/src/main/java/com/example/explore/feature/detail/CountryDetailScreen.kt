@@ -223,7 +223,7 @@ private fun InfoCell(icon: ImageVector, label: String, value: String) {
 @Composable
 fun CountryDetailPreview() {
     ExploreTheme {
-        CountryDetailScreen(detail = CountryDetailUi(), onBackClick = {})
+        CountryDetailScreen(detail = CountryDetailUi("LKA"), onBackClick = {})
     }
 }
 
@@ -236,6 +236,6 @@ fun CountryDetailPreview() {
 @Composable
 fun CountryDetailDarkPreview() {
     ExploreTheme {
-        CountryDetailScreen(detail = CountryDetailUi(), onBackClick = {})
+        CountryDetailScreen(detail = CountryDetailUi("LKA"), onBackClick = {})
     }
 }

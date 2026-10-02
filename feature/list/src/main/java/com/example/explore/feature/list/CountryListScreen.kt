@@ -210,7 +210,7 @@ fun ErrorView(message: String, onRetry: () -> Unit, modifier: Modifier = Modifie
 @Composable
 fun ListSuccessPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Success(fakeCountries), "", {}, {}, {})
+        CountryListScreen(TempListState.Success(emptyList()), "", {}, {}, {})
     }
 }
 
