@@ -6,14 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.example.explore.feature.list.CountryListScreen
-import com.example.explore.feature.list.TempListState
-import com.example.explore.feature.list.fakeCountries
+import androidx.navigation.compose.rememberNavController
+import com.example.explore.navigation.ExploreNavHost
 import com.example.explore.ui.theme.ExploreTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,17 +20,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExploreTheme(darkTheme = false, dynamicColor = false) {
                 Scaffold { innerPadding ->
-                    var query by remember { mutableStateOf("") }
-                    val filtered = fakeCountries.filter {
-                        it.name.contains(query, ignoreCase = true)
-                    }
-                    CountryListScreen(
-                        state = if (filtered.isEmpty()) TempListState.Empty
-                        else TempListState.Success(filtered),
-                        query = query,
-                        onQueryChange = { query = it },
-                        onCountryClick = { /* navigation comes from Hansana */ },
-                        onRetry = {},
+                    val navController = rememberNavController()
+                    ExploreNavHost(
+                        navController = navController,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

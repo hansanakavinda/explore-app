@@ -44,7 +44,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.explore.ui.theme.ExploreTheme
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
 
 data class CountryDetailUi(
     val code: String = "LKA",
@@ -59,6 +62,21 @@ data class CountryDetailUi(
     val languages: List<String> = listOf("Sinhala", "Tamil", "English"),
     val timezones: List<String> = listOf("UTC+5:30")
 )
+
+@Composable
+fun CountryDetailRoute(
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CountryDetailViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    CountryDetailScreen(
+        detail = state,
+        onBackClick = onBackClick,
+        modifier = modifier
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
