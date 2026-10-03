@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +33,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.explore.CountryListItem
@@ -39,11 +43,6 @@ import com.example.explore.ListHeader
 import com.example.explore.SearchBar
 import com.example.explore.core.ui.R
 import com.example.explore.ui.theme.ExploreTheme
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
-import androidx.compose.runtime.getValue
-import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
 
 data class CountryItemUi(
     val code: String,
@@ -73,8 +72,6 @@ val fakeCountries = listOf(
     CountryItemUi("IND", "India", "New Delhi", "Asia")
 )
 
-
-
 @Composable
 fun CountryListRoute(
     onCountryClick: (String) -> Unit,
@@ -103,17 +100,11 @@ fun CountryListScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    CountryListContent(
+        query = query,
+        onQueryChange = onQueryChange,
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
     ) {
-        Spacer(Modifier.height(16.dp))
-        ListHeader()
-        Spacer(Modifier.height(16.dp))
-        SearchBar(query = query, onQueryChange = onQueryChange)
-        Spacer(Modifier.height(16.dp))
-
         when (val state = countries.loadState.refresh) {
             is LoadState.Loading -> LoadingList()
             is LoadState.Error -> ErrorView(state.error.message ?: "Unknown error", onRetry)
@@ -143,6 +134,67 @@ fun CountryListScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CountryListScreen(
+    state: TempListState,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onCountryClick: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CountryListContent(
+        query = query,
+        onQueryChange = onQueryChange,
+        modifier = modifier
+    ) {
+        when (state) {
+            is TempListState.Loading -> LoadingList()
+            is TempListState.Error -> ErrorView(state.message, onRetry)
+            is TempListState.Empty -> EmptyView()
+            is TempListState.Success -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(
+                        items = state.countries,
+                        key = { it.code }
+                    ) { country ->
+                        CountryListItem(
+                            name = country.name,
+                            capital = country.capital,
+                            region = country.region,
+                            flagUrl = country.flagUrl,
+                            onClick = { onCountryClick(country.code) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CountryListContent(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(Modifier.height(16.dp))
+        ListHeader()
+        Spacer(Modifier.height(16.dp))
+        SearchBar(query = query, onQueryChange = onQueryChange)
+        Spacer(Modifier.height(16.dp))
+        content()
     }
 }
 
@@ -225,7 +277,13 @@ fun ErrorView(message: String, onRetry: () -> Unit, modifier: Modifier = Modifie
 @Composable
 fun ListSuccessPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Success(fakeCountries), "", {}, {}, {})
+        CountryListScreen(
+            state = TempListState.Success(fakeCountries),
+            query = "",
+            onQueryChange = {},
+            onCountryClick = {},
+            onRetry = {}
+        )
     }
 }
 
@@ -233,7 +291,13 @@ fun ListSuccessPreview() {
 @Composable
 fun ListLoadingPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Loading, "", {}, {}, {})
+        CountryListScreen(
+            state = TempListState.Loading,
+            query = "",
+            onQueryChange = {},
+            onCountryClick = {},
+            onRetry = {}
+        )
     }
 }
 
@@ -241,7 +305,13 @@ fun ListLoadingPreview() {
 @Composable
 fun ListEmptyPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Empty, "xyz", {}, {}, {})
+        CountryListScreen(
+            state = TempListState.Empty,
+            query = "xyz",
+            onQueryChange = {},
+            onCountryClick = {},
+            onRetry = {}
+        )
     }
 }
 
@@ -249,6 +319,12 @@ fun ListEmptyPreview() {
 @Composable
 fun ListErrorPreview() {
     ExploreTheme {
-        CountryListScreen(TempListState.Error("Check your connection."), "", {}, {}, {})
+        CountryListScreen(
+            state = TempListState.Error("Check your connection."),
+            query = "",
+            onQueryChange = {},
+            onCountryClick = {},
+            onRetry = {}
+        )
     }
 }
