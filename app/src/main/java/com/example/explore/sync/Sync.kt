@@ -22,7 +22,7 @@ object Sync {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        // 1. Setup the immediate, one-time initial sync
+        // 1. Setup the immediate, one-time initial sync on app startup
         val initialSyncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .setConstraints(constraints)
@@ -30,7 +30,7 @@ object Sync {
 
         workManager.enqueueUniqueWork(
             INITIAL_SYNC_WORK_NAME,
-            ExistingWorkPolicy.KEEP,
+            ExistingWorkPolicy.REPLACE,
             initialSyncRequest
         )
 

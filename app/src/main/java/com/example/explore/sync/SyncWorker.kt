@@ -1,7 +1,12 @@
 package com.example.explore.sync
 
+import android.R
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -14,15 +19,32 @@ import kotlinx.coroutines.withContext
 
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
+    @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val countryRepository: CountryRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        // Return a dummy ForegroundInfo or construct a proper notification
-        // if your app targets older APIs. For now, expedited jobs require this override.
-        throw IllegalStateException("Foreground info required for expedited work")
+        val channelId = "sync_channel"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Sync Operations",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            val notificationManager =
+                appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(appContext, channelId)
+            .setSmallIcon(R.drawable.stat_notify_sync)
+            .setContentTitle("Syncing Data")
+            .setContentText("Fetching country data")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+
+        return ForegroundInfo(1, notification)
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {

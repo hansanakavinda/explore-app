@@ -46,7 +46,7 @@ class OfflineFirstCountryRepositoryTest {
                 )
             )
         )
-        coEvery { mockApi.getAllCountries() } returns networkData
+        coEvery { mockApi.getAllCountries(any(), any()) } returns networkData
 
         val result = repository.syncWithNetwork()
 
@@ -57,7 +57,7 @@ class OfflineFirstCountryRepositoryTest {
 
     @Test
     fun `syncWithNetwork failure returns failure result`() = runTest {
-        coEvery { mockApi.getAllCountries() } throws RuntimeException("Network Error")
+        coEvery { mockApi.getAllCountries(any(), any()) } throws RuntimeException("Network Error")
 
         val result = repository.syncWithNetwork()
 

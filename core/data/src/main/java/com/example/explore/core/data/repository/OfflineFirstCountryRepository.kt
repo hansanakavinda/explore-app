@@ -8,6 +8,7 @@ import com.example.explore.core.data.model.asEntity
 import com.example.explore.core.data.model.asExternalModel
 import com.example.explore.core.database.dao.CountryDao
 import com.example.explore.core.model.Country
+import com.example.explore.core.network.model.NetworkCountry
 import com.example.explore.core.network.retrofit.CountryNetworkApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,10 +39,19 @@ class OfflineFirstCountryRepository @Inject constructor(
 
     override suspend fun syncWithNetwork(): Result<Unit> {
         return try {
-            val response = networkApi.getAllCountries()
-            val networkCountries = response.data?.objects ?: emptyList()
-            if (networkCountries.isNotEmpty()) {
-                val entities = networkCountries.map { it.asEntity() }
+            val allNetworkCountries = mutableListOf<NetworkCountry>()
+            var offset = 0
+            while (true) {
+                val response = networkApi.getAllCountries(limit = 100, offset = offset)
+                val countries = response.data?.objects ?: emptyList()
+                if (countries.isEmpty()) break
+                allNetworkCountries.addAll(countries)
+                if (countries.size < 100) break
+                offset += countries.size
+            }
+
+            if (allNetworkCountries.isNotEmpty()) {
+                val entities = allNetworkCountries.map { it.asEntity() }
                 countryDao.clearAll()
                 countryDao.insertAll(entities)
             }

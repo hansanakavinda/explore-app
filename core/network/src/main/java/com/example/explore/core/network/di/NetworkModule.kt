@@ -1,5 +1,6 @@
 package com.example.explore.core.network.di
 
+import com.example.explore.core.network.BuildConfig
 import com.example.explore.core.network.retrofit.CountryNetworkApi
 import dagger.Module
 import dagger.Provides
@@ -23,14 +24,24 @@ object NetworkModule {
     @Singleton
     fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
+        coerceInputValues = true
+        isLenient = true
     }
 
     @Provides
     @Singleton
     fun okHttpCallFactory(): Call.Factory {
+        val apiKey = BuildConfig.REST_COUNTRIES_API_KEY
         val authInterceptor = Interceptor { chain ->
+            val authHeaderValue = when {
+                apiKey.startsWith("Bearer ", ignoreCase = true) -> apiKey
+                apiKey == "rc_live_demo" -> "rc_live_demo"
+                else -> "Bearer $apiKey"
+            }
+
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", "rc_live_demo") // TODO: Replace with real key via BuildConfig
+                .addHeader("Authorization", authHeaderValue)
+                .addHeader("User-Agent", "ExploreApp/1.0")
                 .build()
             chain.proceed(request)
         }
