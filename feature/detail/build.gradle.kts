@@ -24,8 +24,8 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
-    implementation(project(":core:network"))
-    implementation(project(":core:database"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
