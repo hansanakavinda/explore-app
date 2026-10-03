@@ -1,6 +1,6 @@
 package com.example.explore
 
-import android.util.Log
+import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.example.explore.sync.Sync
